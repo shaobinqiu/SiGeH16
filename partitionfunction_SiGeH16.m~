@@ -1,9 +1,8 @@
-clear%%%%
+clear%%%%振动频率没有sort？
 
 all=load('./inf_ya/all_inf.txt');
 degener=load('Ge10_degener.txt');
 occupy=load('occupies.txt');
-sro=load('sro.txt');
 allfre=all(:,4:75)*10^12;%unit conversion
 %allfre=repmat(all(1,4:75),90,1)*10^12;
 
@@ -58,13 +57,4 @@ c=rand(11,3);
         hold on
     end
     legend('show')
-    
- figure(3)
-O_T=occupy'*Z_all_norm;
-for ss=1:2%size(O_T,1)
-    plot(T,O_T(ss,:),'*-','color',c(ss,:))
-        hold on
-    end
-    legend('show')
-
-figure(4)
+ 
