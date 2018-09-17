@@ -1,21 +1,22 @@
 clear%%%%
-
+close all
 all=load('./inf_ya/all_inf.txt');
 degener=load('Ge10_degener.txt');
 occupy=load('occupies.txt');
 sro=load('sro.txt');
 
-
-T_max=13000;
+T_max=1300;
 T=10:10:T_max;
 Fre=all(:,4:75)*10^12;%unit conversion
 %Fre=repmat(all(1,4:75),90,1)*10^12;
 
 n_mu_T=[];
-n_str_max=zeros(200,T_max/10);
-for zz=1:200
-delta_mu=-2+0.01*zz;%%mu_Si-mu_Ge
-H=all(:,2)*delta_mu-all(:,3);
+delta_mu=[-1.5:0.01:-0.7];%%mu_Si-mu_Ge
+
+n_str_max=zeros(size(delta_mu,2),T_max/10);
+tic
+for zz=35%1:size(delta_mu,2)
+H=all(:,2)*delta_mu(1,zz)-all(:,3);
 H=H-max(H)*ones(size(H,1),1);
 H=-H;
 
@@ -31,96 +32,61 @@ for xx=1:size(Z_all,2)
 end%normalization
 
 [x,m]=max(Z_all_norm);
-n_str_max(zz,:)=m;
-
+n_str_max(zz,:)=x;
 
 E_n=[];
 for ll=1:size(Z_all,2)
     en=Z_all(:,ll)'*(all(:,2).*degener)/(Z_all(:,ll)'*degener);
     E_n=[E_n en];
-end%expectation of n_Si
-% figure(1)
-% plot(T,E_n)
-% title('number of Si')
-
+end
 n_mu_T=[n_mu_T;E_n];
 end
-figure(2)
-image(n_mu_T*6)
 
-
-% Z_all_norm=Z_all;
-% for xx=1:size(Z_all,2)
-%     Z_all_norm(:,xx)=Z_all(:,xx)/(Z_all(:,xx)'*degener);
-% end%normalization
-% 
-% Z_n=[];
-% for ss=0:10
-%     z_n=zeros(1,size(T,2));
-%     for tt=1:size(Z_all_norm,1)
-%         if all(tt,2)==ss
-%             z_n=z_n+degener(tt,1)*Z_all_norm(tt,:);
-%         end
-%     end
-%     Z_n=[Z_n ;z_n];
-% end%sum the Z of same n_Si
-% figure(2)
-% c=rand(11,3);
-%     for uu=1:11%1:size(Z_n,1)
-%         plot(T,Z_n(uu,:),'*-','color',c(uu,:))
-%         hold on
-%     end
-%     legend('show')
-%     title('contribution of  structurewith n_i Si')
+%%%%%%%%%%
+%plot n_i(delta_mu, T)
+%%%%%%%%%%
+% figure
+% set(gcf,'color','white');
+% n_mu_T= imrotate(n_mu_T,90);
+% image(n_mu_T,'CDataMapping','scaled')
+% axis off
+% title('n_{Si}(\Delta\mu, T)')
+% text(85,140,'\mu_{Si}-\mu_{Ge}/ev','FontSize',14);
+% text(-10,0,'T/K','FontSize',14);
+% colorbar
+% for ii=1:6
+%     text(-7,ii*20-10,num2str(1400-ii*200),'FontSize',10)
 %     
-%  figure(3)
-% O_T=occupy'*Z_all_norm;
-% for ss=1:size(O_T,1)
-%     plot(T,O_T(ss,:),'-','color',c(ss,:))
-%         hold on
-%     end
-%     legend('show')
-%     title('occupy of each point')
-% 
-% figure(4)
-% for tt=1:size(sro,1)
-%     sro(tt,:)=sro(tt,:)*degener(tt,1);
 % end
-% sro_T=sro'*Z_all_norm;
-% for uu=1:2%size(sro_T,1)
-%     plot(T,sro_T(uu,:),'-','color',c(uu,:))
-%         hold on
-%     end
-%     legend('show')
-%     title('sro')
-% 
-% %%%%free energy
-% T_i=1000;
-% F=[];
-% for vv=1:size(all,1)
-%     f=H(vv,1);
-%     for xx=1:size(allfre,2)
-%         f=f+h*allfre(vv,xx)*0.5+k*T_i*log(1-exp(-h*allfre(vv,xx)/k/T_i));
-% 
-%     end
-%     F=[F;f];
+% for ii=1:8
+% text(ii*10-2,136,num2str(-1.5+ii*0.1),'FontSize',10)
 % end
-% figure(5)
-% plot(all(:,2),F,'*')
-% title('free energy')
+%%%%%%%%%%%
 
+%%%%%%%%%%%
+%plot n_Si(T)
+%%%%%%%%%%%
+% figure
+% set(gcf,'color','white');
+% plot(T,E_n)
+% title('n_{Si}(\Delta=-1.15ev)')
+% xlabel('T/k')
+% ylabel('n_{Si}','Rotation',0)
+%%%%%%%%%%%
 
-
-
-
-
-
-
-
-
-
-
-
+%%%%%%%%%%%
+%plot z_i(T) 10k 300k 600k 900k
+%%%%%%%%%%%
+% dir=[1,30,60,90];
+% for xx=1:size(dir,2)
+% figure 
+% set(gcf,'color','white');
+% bar([1:90],Z_all_norm(:,dir(1,xx)).*degener)
+% sum(Z_all_norm(:,dir(1,xx)).*degener)
+% title(['T=',num2str(dir(1,xx)*10),'k'])
+% ylabel('p','Rotation',0)
+% end
+%%%%%%%%%%%%
 
 
 
