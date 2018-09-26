@@ -1,5 +1,5 @@
-% clear%%%%
-% %close all
+%  clear%%%%
+% % close all
 % all=load('./inf_ya/all_inf.txt');
 % degener=load('Ge10_degener.txt');
 % occupy=load('occupies.txt');
@@ -8,12 +8,15 @@
 % T_max=2000;
 % T=10:1:T_max;
 % Fre=all(:,4:75)*10^12;%unit conversion
-% %Fre=repmat(all(1,4:75),90,1)*10^12;
+% Fre=repmat(all(1,4:75),90,1)*10^12;
 % 
 % n_mu_T=[];
 % %delta_mu=[-1.5:0.001:-0.7];%%mu_Si-mu_Ge
-% delta_mu=[-1.25:0.001:-0.9];%%plot predict phase diagram 
+% delta_mu=[-1.5:0.001:-0.7];%%plot predict phase diagram 
 % 
+% delete(gcp('nocreate'))
+% CoreNum=3; %调用的处理器个数
+% parpool('local',CoreNum);
 % 
 % n_str_max=zeros(size(delta_mu,2),T_max/10);
 % for zz=1:size(delta_mu,2)
@@ -23,7 +26,7 @@
 % H=-H;
 % 
 % Z_all=[];
-% for ii= 1:size(T,2)
+% parfor ii= 1:size(T,2)
 % z_i=partitionf(H,Fre,T(ii));
 % Z_all=[Z_all   z_i];
 % end%%% Z = sum(g_i*z_i)        z_i from $9.7 wangzhicheng
@@ -42,13 +45,15 @@
 % end
 % end
 % 
-% % E_n=[];
-% % for ll=1:size(Z_all,2)
-% %     en=Z_all(:,ll)'*(all(:,2).*degener)/(Z_all(:,ll)'*degener);
-% %     E_n=[E_n en];
-% % end
-% % n_mu_T=[n_mu_T;E_n];
+% E_n=[];
+% for ll=1:size(Z_all,2)
+%     en=Z_all(:,ll)'*(all(:,2).*degener)/(Z_all(:,ll)'*degener);
+%     E_n=[E_n en];
 % end
+% n_mu_T=[n_mu_T;E_n];
+% end
+% delete(gcp('nocreate'))
+%save n_mu_T.txt n_mu_T -ascii
 
 %plot%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%
@@ -99,8 +104,8 @@
 
 %%%%%%%%%%%%
 %plot predict phase diagram
-%%%%%%%%%%%%%%
- %n_str_max= imrotate(n_str_max,90);
+%%%%%%%%%%%%%
+% n_str_max= imrotate(n_str_max,90);
  te=unique(n_str_max);
  n_str_max_p=zeros(size(n_str_max,1),size(n_str_max,2));
   for ii=1:size(n_str_max,1)
@@ -112,22 +117,22 @@
  set(gcf,'color','white');
  image(n_str_max_p,'CDataMapping','scaled')
  for ii=1:9
-    text(-30,ii*200,num2str(2000-ii*200),'FontSize',10)
+    text(-70,ii*200,num2str(2000-ii*200),'FontSize',10)
     
 end
-for ii=1:7
-text(ii*50-10,2050,num2str(-1.25+ii*0.05),'FontSize',10)
+for ii=1:8
+text(ii*100-20,2050,num2str(-1.5+ii*0.1),'FontSize',10)
 end
-text(35,1000,'2','FontSize',10)
-text(75,1750,'53','FontSize',10)
-text(85,1900,'70','FontSize',10)
-text(117,1800,'76','FontSize',10)
-text(147,1700,'85','FontSize',10)
-text(190,1600,'88','FontSize',10)
-text(300,1600,'89','FontSize',10)
-text(3,1400,'90','FontSize',10)
-title('predict phase(>30%)')
-axis off
+% text(35,1000,'2','FontSize',10)
+% text(75,1750,'53','FontSize',10)
+% text(85,1900,'70','FontSize',10)
+% text(117,1800,'76','FontSize',10)
+% text(147,1700,'85','FontSize',10)
+% text(190,1600,'88','FontSize',10)
+% text(300,1600,'89','FontSize',10)
+% text(3,1400,'90','FontSize',10)
+% title('predict phase(>30%)')
+ axis off
  %%%%%%%%%%%%%%
 
 

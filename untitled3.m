@@ -1,58 +1,87 @@
-clear
-a=[  15.5524 16.6696 20.9765
- 16.7837 17.2640 20.6812
-14.8342 15.9954 19.9913
- 17.3098 17.1982 19.3613
- 15.3411 15.9043 18.6974
- 16.5667 16.4925 18.3710
- 18.8332 17.6269 20.9077
- 19.7060 17.0504 22.5611
- 19.5945 16.5025 23.8722
- 20.6348 16.4628 21.6594
- 20.4046 15.4296 24.2567
- 21.4352 15.3933 22.0740
- 21.3230 14.8806 23.3648
- 19.3626 18.7894 20.4121
- 18.7365 19.6622 19.5670
- 20.7807 19.2077 20.7780
- 19.3656 20.9134 19.0780
- 21.3339 20.3457 20.3193
- 20.6014 21.2590 19.4366
- 21.1027 23.0600 17.7289
- 22.0080 23.3405 19.6844
- 20.4279 22.5847 16.5932
- 20.4817 23.3504 15.4137
- 21.2061 24.5610 15.3765
- 21.8242 24.2360 17.6712
- 21.8916 25.0119 16.5159
- 22.4080 23.2554 21.0269
- 23.2337 24.2704 21.5446
- 22.3956 24.4132 18.9063
- 23.2136 25.4297 19.3953
- 23.6388 25.3503 20.7312
- 15.1508 16.7346 21.9801
- 14.7840 15.3659 17.9407
- 20.3127 15.0157 25.2531
- 22.1506 14.9589 21.3867
- 18.7744 21.5746 18.4562
- 22.3649 20.5702 20.5701
- 19.8858 21.6527 16.5903
- 19.9679 23.0053 14.5259
- 21.2414 25.1397 14.4627
- 22.4588 25.9332 16.4913
- 22.0939 22.4518 21.6731
- 23.5564 24.2256 22.5767
- 23.5108 26.2607 18.7689
- 24.2724 26.1258 21.1416
- 21.2075 22.4959 18.9696
- 13.2944 15.2521 20.3834
- 17.1629 16.2744 16.7244
- 18.4159 17.0959 25.0440
- 20.8689 17.0628 20.0193
- 22.3319 13.5352 23.8639
- 17.0336 19.5199 19.0953
- 21.9008 18.2108 21.7279
- 17.5992 18.1222 21.9860
-];
-     b=[sum(a(:,1))   sum(a(:,2))  sum(a(:,3))]/size(a,1);
-     p=a-repmat(b,size(a,1),1)+repmat([20 20 20 ],size(a,1),1);
+% clear%%%%get(n_i,T,delta_mu)
+%close all
+all=load('./inf_ya/all_inf.txt');
+degener=load('Ge10_degener.txt');
+T_max=1200;
+T=10:1:T_max;
+Fre=repmat(all(1,4:75),90,1)*10^12;
+n_mu_T=load('n_mu_T.txt');
+% Fre=all(:,4:75)*10^12;%unit conversion
+% n_mu_T=load('n_mu_T_vib.txt');
+
+
+n_Si=[0.5:0.1:9.5];
+
+
+n_str_max=zeros(size(n_Si,2),size(T,2));
+delta_mu=zeros(size(n_Si,2),size(T,2));
+err=0;
+p=[];
+for zz=1:size(n_Si,2)
+    zz
+Z_all=[];
+for ii=1:size(T,2)
+    for yy=1:size(n_mu_T,1)-1
+        if n_Si(1,zz)>=n_mu_T(yy,ii) && n_Si(1,zz)<=n_mu_T(yy+1,ii)
+           delta_mu(zz,ii)=-1.5+(yy-1)*0.001;
+        end
+    end
+    if delta_mu(zz,ii)==0
+        err=err+1;
+    end%%%could find n_si
+H=all(:,2)*delta_mu(zz,ii)-all(:,3);
+H=H-max(H)*ones(size(H,1),1);
+H=-H;
+z_i=partitionf(H,Fre,T(ii));
+Z_all=[Z_all   z_i];
+end%%% Z = sum(g_i*z_i)        z_i from $9.7 wangzhicheng
+
+Z_all_norm=Z_all;
+for xx=1:size(Z_all,2)
+    Z_all_norm(:,xx)=Z_all(:,xx).*degener/(Z_all(:,xx)'*degener);
+end%normalization
+
+[x,m]=max(Z_all_norm);
+p=[p;x];
+for ww=1:size(x,2)
+if x(1,ww)>0.3%%%%structure which is more than 30% and dominant
+n_str_max(zz,ww)=m(1,ww);
+else
+n_str_max(zz,ww)=0;
+end
+end
+
+end
+err
+% %n_str_max=p;
+% save n_str_max_ni_T.txt n_str_max -ascii
+%  n_str_max= imrotate(n_str_max,90);
+ te=unique(n_str_max);
+ n_str_max_p=zeros(size(n_str_max,1),size(n_str_max,2));
+  for ii=1:size(n_str_max,1)
+     for jj=1:size(n_str_max,2)
+       n_str_max_p(ii,jj)=find(te==n_str_max(ii,jj));
+     end
+ end
+ figure 
+ set(gcf,'color','white');
+ image(p,'CDataMapping','scaled')
+  for ii=1:11
+    text(-70,ii*100,num2str(1200-ii*100),'FontSize',10)
+    
+end
+for ii=1:9
+text(ii*100-15,1240,num2str((0.5+ii*1)/10),'FontSize',10)
+end
+text(100,1000,'2','FontSize',10)
+text(420,1050,'53','FontSize',10)
+text(550,1100,'70','FontSize',10)
+text(660,1100,'76','FontSize',10)
+text(750,1000,'85','FontSize',10)
+text(830,1000,'88','FontSize',10)
+text(860,300,'89','FontSize',10)
+text(15,600,'90','FontSize',10)
+text(-50,0,'T/K','FontSize',12)
+text(950,1200,'n','FontSize',12)
+title('predict phase(>30%)')
+ axis off
