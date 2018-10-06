@@ -1,5 +1,5 @@
 %  clear%%%%
-% % close all
+% % % close all
 % all=load('./inf_ya/all_inf.txt');
 % degener=load('Ge10_degener.txt');
 % occupy=load('occupies.txt');
@@ -9,7 +9,8 @@
 % T=10:1:T_max;
 % Fre=all(:,4:75)*10^12;%unit conversion
 % Fre=repmat(all(1,4:75),90,1)*10^12;
-% 
+% E_pred=load('./bond_energy_model/E_pred_BEM.txt');
+% all(:,3)=E_pred;
 % n_mu_T=[];
 % %delta_mu=[-1.5:0.001:-0.7];%%mu_Si-mu_Ge
 % delta_mu=[-1.5:0.001:-0.7];%%plot predict phase diagram 
@@ -105,7 +106,7 @@
 %%%%%%%%%%%%
 %plot predict phase diagram
 %%%%%%%%%%%%%
-% n_str_max= imrotate(n_str_max,90);
+ n_str_max= imrotate(n_str_max,90);
  te=unique(n_str_max);
  n_str_max_p=zeros(size(n_str_max,1),size(n_str_max,2));
   for ii=1:size(n_str_max,1)
@@ -116,6 +117,7 @@
  figure 
  set(gcf,'color','white');
  image(n_str_max_p,'CDataMapping','scaled')
+ hold on
  for ii=1:9
     text(-70,ii*200,num2str(2000-ii*200),'FontSize',10)
     
