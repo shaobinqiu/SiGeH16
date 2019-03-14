@@ -1,5 +1,5 @@
 clear%%%%%bond energy model 
-close all
+%close all
 all=load('../inf_ya/all_inf.txt');
 degener=load('../Ge10_degener.txt');
 x=zeros(90,8);%%%Si Ge H Si_Si Ge_Ge Si_Ge Si_H Ge_H
@@ -47,10 +47,12 @@ E=all(:,3);
 E_pred=x*B;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figure
+set(gcf,'color','white');
 plot(E,E_pred,'b*')
 hold on 
 plot(E,E,'r-')
 figure
+set(gcf,'color','white');
 plot(R)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 x_nonrep=unique(x,'rows');%%%if we know x(:,[3 5 6 8]), all of x we can get

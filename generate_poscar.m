@@ -1,13 +1,11 @@
 clear
 P=load('Ge10H16.txt');
-
+a=15;
  str=load('Ge10_str.txt');
  str=[str;0 0 0 0 0 0 0 0 0 0];
- Lat=[20 0 0
-     0 20 0
-     0 0 20];
-      
-      
+ Lat=[a 0 0
+     0 a 0
+     0 0 a];    
  N_Si=[] ;    
  for ii=1:size(str,1)
      p=P;
@@ -18,7 +16,7 @@ P=load('Ge10H16.txt');
      pos=[sub;p]/Lat-floor([sub;p]/Lat)+repmat( [0.5 0.5 0.5] , size(P,1) , 1 );
      
      d=[size(sub,1) size(p,1)-16 16];
-     n=['POSCAR_SiGe/POSCAR-',num2str(ii)];
+     n=['POSCAR_SiGe_101010/POSCAR-',num2str(ii)];
      fid=fopen(n,'w+');
      fprintf(fid,'SiGeH16 \n');
      fprintf(fid,'%g\n',1);

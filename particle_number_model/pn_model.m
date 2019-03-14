@@ -22,9 +22,11 @@ end
 save all_PNM.txt all_PNM -ascii
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figure
+set(gcf,'color','white');
 plot(E,E_pred,'b*')
 hold on 
 plot(E,E,'r-')
 figure
+set(gcf,'color','white');
 plot(R)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
