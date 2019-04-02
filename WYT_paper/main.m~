@@ -113,14 +113,21 @@ inf_7=load('/home/qiusb/Desktop/temp/WYT/SiGe_energy/SiGe10_90.txt');%%%1:5 colu
 %%%%%%%plot gap
 figure   
 set(gcf,'color','w')    
-xlim([0, 7])
+    %plot(inf(:,6),delta_H,symbol(ii),'Color',color(ii,:))
+     xlim([0, 7])
+    n_x1=6;%%%number of axis label
+    xl1={}; 
 for ii=[1:6]
     name=['inf_', num2str(ii)];
-    inf=eval(name); 
+    inf=eval(name);
+ 
     hold on
     plot(repmat(ii,size(inf,1),1),inf(:,10),'*')    
 end
-xl1={'SiGe10';'SiGe14';'SiGe18';'SiGe221D';'SiGe222D';'SiGe223D'}; 
+
+for ii=1:n_x1
+    xl1={'SiGe10';'SiGe14';'SiGe18';'SiGe221D';'SiGe222D';'SiGe223D'}; 
+end
 set(gca,'XTick',1:6);
 set(gca,'XTicklabel',xl1)
 h = gca;
