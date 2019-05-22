@@ -9,33 +9,33 @@ inf_6=load('/home/qiusb/Desktop/temp/WYT/SiGe_energy/SiGe223D.txt');
 inf_7=load('/home/qiusb/Desktop/temp/WYT/SiGe_energy/SiGe10_90.txt');%%%1:5 columns = 0
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%BEM
-% index=[1:5];%
-% B_all=[];
-% N_i=[];
-% n=0;
-% for ii=1:6
-%     name=['inf_', num2str(ii)];
-%     inf=eval(name);
-% N_i=[N_i size(inf,1)+n];
-% n=N_i(end);
-% end
-% inf_all=[inf_1;inf_2;inf_3;inf_4;inf_5;inf_6];
-% c=[];
-% for kk=1:size(inf_all,1)
-%     c=[c;inf_all(kk,index) zeros(1,6)];
-%     temp=0;
-%     for ll=1:size(N_i,2)
-%         if kk<=N_i(ll)
-%             temp=temp+1;
-%         end
-%     end
-%     c(kk,5+7-temp)=1;
-% end
-% %c=inf_all(:,index);
-% [B_a,BINT_a,R_a]=regress(inf_all(:,11), c);%%%%%xB=E
-% E_pred_a=c*B_a;
-% R_a_peratom=[];
-% %%%%%%%%%%%%%%%
+index=[1:5];%
+B_all=[];
+N_i=[0];
+n=0;
+for ii=1:6
+    name=['inf_', num2str(ii)];
+    inf=eval(name);
+N_i=[N_i size(inf,1)+n];
+n=N_i(end);
+end
+inf_all=[inf_1;inf_2;inf_3;inf_4;inf_5;inf_6];
+c=[];
+for kk=1:size(inf_all,1)
+    c=[c;inf_all(kk,index) zeros(1,6)];
+    temp=0;
+    for ll=1:size(N_i,2)-1
+        if kk<=N_i(ll+1)
+            temp=temp+1;
+        end
+    end
+    c(kk,5+7-temp)=1;
+end
+%c=inf_all(:,index);
+[B_a,BINT_a,R_a]=regress(inf_all(:,11), c);%%%%%xB=E
+E_pred_a=c*B_a;
+R_a_peratom=[];
+%%%%%%%%%%%%%%%delete the stange one
 % s=[];
 % for jj=1:size(R_a,1)
 %     R_a_peratom=[R_a_peratom;R_a(jj,1)/sum(inf_all(jj,6:8))];
@@ -43,22 +43,50 @@ inf_7=load('/home/qiusb/Desktop/temp/WYT/SiGe_energy/SiGe10_90.txt');%%%1:5 colu
 %         s=[s;jj];
 %      end
 % end
-% R_a(s,:)=[];
-% 
-% figure 
-% set(gcf,'color','w')    
-% hist(R_a,100)
-% xlim([-0.02 0.04])
-% xlabel('\delta E / eV')
-% 
-% figure
-% set(gcf,'color','w')    
-% plot(inf_all(:,11),E_pred_a,'*')
-% hold on
-% a=[min(inf_all(:,11))*1.05, max(inf_all(:,11))*0.95];
-% plot(a,a,'r-')
-% xlabel('E_{DFT} / eV')
-% ylabel('E_{BEM} / eV')
+%R_a(s,:)=[];
+%%%%%%%%%%%%%%%%%%%
+figure 
+set(gcf,'color','w')
+x=N_i(6);
+y=N_i(7);
+
+
+hist(R_a,200)
+h=findobj(gca,'Type','patch');
+h.FaceColor = [0.6 0.6 0.6];
+h.EdgeColor = [0.6 0.6 0.6];
+xlim([-0.02 0.04])
+xlabel('\delta E / eV')
+hold on 
+hist(R_a(x:y,1),200)
+
+
+
+figure
+set(gcf,'color','w')
+fill([-240, -240, -180, -180], [-240, -180, -180, -240],  [0.95 0.95 0.95])
+hold on 
+fill([-180, -240, -240, -150, -150, -180], [-180, -180, -150, -150, -240, -240],  [0.99 0.95 0.95])    
+hold on 
+fill([-150, -240, -240, -115, -115, -150], [-150, -150, -115, -115, -240, -240],  [0.95 0.99 0.95])    
+hold on 
+fill([-115, -240, -240, -80, -80, -115], [-115, -115, -80, -80, -240, -240],  [0.95 0.95 0.99])    
+hold on 
+
+sy=['*', 'o', 'v', '^', '+', 's'];
+for ii=1:size(N_i,2)-1
+plot(inf_all(N_i(ii)+1:N_i(ii+1),11),E_pred_a(N_i(ii)+1:N_i(ii+1),1),sy(1))
+hold on
+end
+a=[min(inf_all(:,11))*1.05, max(inf_all(:,11))*0.95];
+plot(a,a,'r-')
+xlabel('E_{DFT} / eV')
+ylabel('E_{BEM} / eV')
+text(-235,-190,'Si_xGe_{22-x}','Color','k','FontSize',14)
+text(-205,-160,'Si_xGe_{18-x}','Color','k','FontSize',14)
+text(-175,-130,'Si_xGe_{14-x}','Color','k','FontSize',14)
+text(-140,-95,'Si_xGe_{10-x}','Color','k','FontSize',14)
+
 
 % s=[];
 % for ii=1:size(R_a,1)
@@ -111,23 +139,23 @@ inf_7=load('/home/qiusb/Desktop/temp/WYT/SiGe_energy/SiGe10_90.txt');%%%1:5 colu
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%plot gap
-figure   
-set(gcf,'color','w')    
-xlim([0, 7])
-for ii=[1:6]
-    name=['inf_', num2str(ii)];
-    inf=eval(name); 
-    hold on
-    plot(repmat(ii,size(inf,1),1),inf(:,10),'*')    
-end
-xl1={'SiGe10';'SiGe14';'SiGe18';'SiGe221D';'SiGe222D';'SiGe223D'}; 
-set(gca,'XTick',1:6);
-set(gca,'XTicklabel',xl1)
-h = gca;
-th=rotateticklabel(h, 45,8,'demo');%调用下面的函数，坐标倾斜45度,字体大小8
-ylabel('gap (eV)','fontsize',8,'fontweight','bold')
-hold on 
-legend('SiGe14','SiGe18','SiGe221D','SiGe222D','SiGe223D')
+% figure   
+% set(gcf,'color','w')    
+% xlim([0, 7])
+% for ii=[1:6]
+%     name=['inf_', num2str(ii)];
+%     inf=eval(name); 
+%     hold on
+%     plot(repmat(ii,size(inf,1),1),inf(:,10),'*')    
+% end
+% xl1={'SiGe10';'SiGe14';'SiGe18';'SiGe221D';'SiGe222D';'SiGe223D'}; 
+% set(gca,'XTick',1:6);
+% set(gca,'XTicklabel',xl1)
+% h = gca;
+% th=rotateticklabel(h, 45,8,'demo');%调用下面的函数，坐标倾斜45度,字体大小8
+% ylabel('gap (eV)','fontsize',8,'fontweight','bold')
+% hold on 
+% legend('SiGe14','SiGe18','SiGe221D','SiGe222D','SiGe223D')
 
 
 
